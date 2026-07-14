@@ -22,8 +22,8 @@
 
 Отдельные аугментации:
 
-![Гароу single](results/single/Гароу_single.png)
-![Генос single](results/single/Генос_single.png)
+![Гароу single](results/task1/single/Гароу_single.png)
+![Генос single](results/task1/single/Генос_single.png)
 
 На изображении представлены: оригинал, RandomHorizontalFlip (отражение), RandomCrop (обрезка), ColorJitter (изменение цвета), RandomRotation (поворот), RandomGrayscale (оттенки серого).
 
