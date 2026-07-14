@@ -30,56 +30,61 @@ def show_images(images, labels=None, nrow=8, title=None, size=128):
     plt.tight_layout()
     plt.show()
 
-def show_single_augmentation(original_img, augmented_img, title="Аугментация"):
-    """Визуализирует оригинальное и аугментированное изображение рядом."""
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4))
-    
-    # Увеличиваем изображения
-    resize_transform = transforms.Resize((128, 128), antialias=True)
-    orig_resized = resize_transform(original_img)
-    aug_resized = resize_transform(augmented_img)
-    
-    # Оригинальное изображение
-    orig_np = orig_resized.numpy().transpose(1, 2, 0)
-    orig_np = np.clip(orig_np, 0, 1)
-    ax1.imshow(orig_np)
-    ax1.set_title("Оригинал")
-    ax1.axis('off')
-    
-    # Аугментированное изображение
-    aug_np = aug_resized.numpy().transpose(1, 2, 0)
-    aug_np = np.clip(aug_np, 0, 1)
-    ax2.imshow(aug_np)
-    ax2.set_title(title)
-    ax2.axis('off')
-    
+def show_single_augmentation(original, augmented, title):
+    """
+    Показывает оригинальное и аугментированное изображение.
+    Поддерживает как PIL Image, так и тензоры.
+    """
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    # Функция для преобразования в numpy
+    def to_numpy(img):
+        if hasattr(img, 'numpy'):  # тензор PyTorch
+            return img.numpy().transpose(1, 2, 0)
+        elif hasattr(img, 'shape'):  # уже numpy
+            return img
+        else:  # PIL Image
+            return np.array(img)
+
+    orig_np = to_numpy(original)
+    aug_np = to_numpy(augmented)
+
+    fig, axes = plt.subplots(1, 2, figsize=(8, 4))
+    axes[0].imshow(orig_np)
+    axes[0].set_title('Оригинал')
+    axes[0].axis('off')
+    axes[1].imshow(aug_np)
+    axes[1].set_title(title)
+    axes[1].axis('off')
     plt.tight_layout()
     plt.show()
 
-def show_multiple_augmentations(original_img, augmented_imgs, titles):
-    """Визуализирует оригинальное изображение и несколько аугментаций."""
-    n_augs = len(augmented_imgs)
-    fig, axes = plt.subplots(1, n_augs + 1, figsize=((n_augs + 1) * 2, 2))
-    
-    # Увеличиваем изображения
-    resize_transform = transforms.Resize((128, 128), antialias=True)
-    orig_resized = resize_transform(original_img)
-    
-    # Оригинальное изображение
-    orig_np = orig_resized.numpy().transpose(1, 2, 0)
-    orig_np = np.clip(orig_np, 0, 1)
+def show_multiple_augmentations(original, augmented_list, titles):
+    """
+    Показывает оригинал и несколько аугментированных изображений.
+    """
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    def to_numpy(img):
+        if hasattr(img, 'numpy'):
+            return img.numpy().transpose(1, 2, 0)
+        elif hasattr(img, 'shape'):
+            return img
+        else:
+            return np.array(img)
+
+    orig_np = to_numpy(original)
+    n = len(augmented_list) + 1
+    fig, axes = plt.subplots(1, n, figsize=(4*n, 4))
     axes[0].imshow(orig_np)
-    axes[0].set_title("Оригинал")
+    axes[0].set_title('Оригинал')
     axes[0].axis('off')
-    
-    # Аугментированные изображения
-    for i, (aug_img, title) in enumerate(zip(augmented_imgs, titles)):
-        aug_resized = resize_transform(aug_img)
-        aug_np = aug_resized.numpy().transpose(1, 2, 0)
-        aug_np = np.clip(aug_np, 0, 1)
-        axes[i + 1].imshow(aug_np)
-        axes[i + 1].set_title(title)
-        axes[i + 1].axis('off')
-    
+    for i, (aug, title) in enumerate(zip(augmented_list, titles), start=1):
+        aug_np = to_numpy(aug)
+        axes[i].imshow(aug_np)
+        axes[i].set_title(title)
+        axes[i].axis('off')
     plt.tight_layout()
-    plt.show() 
+    plt.show()
